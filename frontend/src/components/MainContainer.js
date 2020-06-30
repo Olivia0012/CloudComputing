@@ -1,7 +1,9 @@
 import React from "react";
 import "rsuite/dist/styles/rsuite-default.css";
 
-import Keplermap from "./Keplermap";
+import KeplermapDaily from "./KeplermapDaily";
+import KeplermapCovid from "./KeplermapCovid";
+import KeplermapHome from "./KeplermapHome";
 import Elements from "./Elements";
 import Diagrams from "./Diagrams";
 import Scenario5 from "./Scenario5";
@@ -9,8 +11,9 @@ import Scenario4 from "./Scenario4";
 import Scenario3 from "./Scenario3";
 import Scenario2 from "./Scenario2";
 import scenario1 from "../testData/s1.json";
+import AboutUs from "../testData/aboutUs.jpg";
 
-import { BrowserRouter as Router, Switch, Route} from "react-router-dom";
+import { BrowserRouter as Router } from "react-router-dom";
 
 import {
   Icon,
@@ -78,15 +81,26 @@ export default class MainContainer extends React.Component {
     console.log(props);
     this.state = {
       expand: true,
-      diagramData: []
+      url: "",
+      diagramData: ""
     };
     this.handleToggle = this.handleToggle.bind(this);
   }
 
   getChildrenMsg = msg => {
     console.log(msg);
-    this.setState({ diagramData: msg });
-    //   console.log(this.state.diagramData);
+
+    this.state.diagramData = msg;
+    console.log(this.state.diagramData);
+    var urlm;
+    if(this.state.diagramData === "" || this.state.diagramData === null){
+      alert("Please choose one senario for comparison");
+    }else{
+      urlm = this.state.diagramData.split("?");
+      console.log(urlm[0]);
+      this.setState({ diagramData: urlm[0], url: msg });
+      this.forceUpdate();
+    }
   };
 
   handleToggle() {
@@ -124,18 +138,9 @@ export default class MainContainer extends React.Component {
                 expanded={expand}
                 defaultOpenKeys={["3"]}
                 appearance="default"
-                //   style={{ background: "black" }}
               >
                 <Sidenav.Body>
                   <Nav>
-                 { /*  <Nav.Item
-                      eventKey="1"
-                      active
-                      icon={<Icon icon="dashboard" />}
-                      href="/dashboard"
-                    >
-                      Dashboard
-                 </Nav.Item>*/}
                     <Dropdown
                       eventKey="3"
                       trigger="hover"
@@ -143,11 +148,15 @@ export default class MainContainer extends React.Component {
                       icon={<Icon icon="magic" />}
                       placement="rightStart"
                     >
-                      <Dropdown.Item href="/scenario1">
+                      <Dropdown.Item
+                        onClick={() => this.setState({ diagramData: "s1" })}
+                      >
                         Twitter Daily Time
                       </Dropdown.Item>
-                      <Dropdown.Item href="/scenario5">
-                        People Emotion
+                      <Dropdown.Item
+                        onClick={() => this.setState({ diagramData: "s4" })}
+                      >
+                        Covid-19 Tweet
                       </Dropdown.Item>
                     </Dropdown>
                     <Dropdown
@@ -160,7 +169,11 @@ export default class MainContainer extends React.Component {
                       <Elements getChildrenMsg={this.getChildrenMsg} />
                     </Dropdown>
 
-                    <Nav.Item eventKey="2" icon={<Icon icon="group" />}>
+                    <Nav.Item
+                      eventKey="2"
+                      icon={<Icon icon="group" />}
+                      onClick={() => this.setState({ diagramData: "aboutUs" })}
+                    >
                       About Us
                     </Nav.Item>
                   </Nav>
@@ -172,55 +185,33 @@ export default class MainContainer extends React.Component {
             <Container>
               <Header></Header>
               <Content>
-                <Switch>
-                  <Route path="/team">
-                    <Keplermap scenario="0" />
-                  </Route>
-                    <Route path={"/comparison/:url"} 
-                      render={(props) => {
-                    //    return <Diagrams {...props} items={this.state.data}
-                    console.log(props)
-                     if(props.match.params.url === "scenario1")
-                        return <Diagrams {...props} items={this.state.data}/>
-                     else if(props.match.params.url === "scenario2")
-                      return <Scenario2 {...props} items={this.state.data}/>
-                        
-                     if(props.match.params.url === "scenario3")
-                        return <Scenario3 {...props} items={this.state.data}/>
-                     if(props.match.params.url === "scenario4")
-                       return <Scenario4 {...props} items={this.state.data}/>
-                     if(props.match.params.url === "scenario5")
-                       return <Scenario5 {...props} items={this.state.data}/>
-                        
-                    //    return <Scenario5 {...props} items={this.state.data}
-                    
-                        
-                      }}
-                   />
-                      
-
-                  <Route path="/home">
-                    <Home />
-                  </Route>
-                  <Route path="/scenario1">
-                    <Keplermap scenario="1" />
-                  </Route>
-                  <Route path="/scenario2">
-                    <Keplermap scenario="2" />
-                  </Route>
-                  <Route path="/scenario3">
-                    <Keplermap scenario="3" />
-                  </Route>
-                  <Route path="/scenario4">
-                    <Keplermap scenario="4" />
-                  </Route>
-                  <Route path="/scenario5">
-                    <Keplermap scenario="5" />
-                  </Route>
-                  <Route path="/111">
-                    <Keplermap scenario="1" />
-                  </Route>
-                </Switch>
+                {this.state.diagramData == "scenario1" ? (
+                  <Diagrams data={this.state.url} />
+                ) : null}
+                {this.state.diagramData == "scenario2" ? (
+                  <Scenario2 data={this.state.url} />
+                ) : null}
+                {this.state.diagramData == "scenario3" ? (
+                  <Scenario3 data={this.state.url} />
+                ) : null}
+                {this.state.diagramData == "scenario4" ? (
+                  <Scenario4 data={this.state.url} />
+                ) : null}
+                {this.state.diagramData == "scenario5" ? (
+                    <Scenario5 data={this.state.url} />
+                ) : null}
+                {this.state.diagramData == "s1" ? (
+                  <KeplermapDaily scenario="1" />
+                ) : null}
+                {this.state.diagramData == "s4" ? (
+                  <KeplermapCovid scenario="4" />
+                ) : null}
+                {this.state.diagramData == "" ? (
+                  <KeplermapHome />
+                ) : null}
+                {this.state.diagramData == "aboutUs" ? (
+                  <img src={AboutUs} width="100%" height="100%" />
+                ) : null}
               </Content>
             </Container>
           </Container>

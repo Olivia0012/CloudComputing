@@ -1,64 +1,71 @@
 import React from "react";
 import CanvasJSReact from "../assets/canvasjs.react";
-//import { Grid, Row, Col, Panel } from "rsuite";
-//import data from "../testData/data.json";
-
-//var CanvasJSReact = require('./canvasjs.react');
 var CanvasJS = CanvasJSReact.CanvasJS;
 var CanvasJSChart = CanvasJSReact.CanvasJSChart;
 
-
-
 export default class MultiLines extends React.Component {
-    constructor(props) {
-        super(props);
-        console.log(props);
-        this.state = {
-          data: props.data,
-          type: props.type,
-          title: props.title,
-          showData:[]
-        };
-    
-        
-        var data = props.data;
-     //   var showData = [];
-     //   console.log(props.data.length);
-        for (var i = 0; i < data.length; i++) {
-          //console.log(data[i].data.length);
-          var dataPoints = [];
-          for (var j = 0; j < data[i].data.length; j++) {
-            console.log(data[i].data[j].x);
-            dataPoints.push({
-              x: data[i].data[j].x,
-              y: data[i].data[j].y
-            });
-          }
-          this.state.showData.push({
-            type: "line",
-            name: data[i].title,
-            showInLegend: true,
-            xValueFormatString: "Time: ##",
-            yValueFormatString: "#,###",
-            dataPoints: dataPoints
-          })
-        }
-       
-     //   this.setState({showData:showData})
-    
-        this.toggleDataSeries = this.toggleDataSeries.bind(this);
-        this.addSymbols = this.addSymbols.bind(this);
+  constructor(props) {
+    super(props);
+    console.log(props);
+    this.state = {
+      data: props.data,
+      type: props.type,
+      title: props.title,
+      showData: []
+    };
+
+    var data = props.data;
+    for (var i = 0; i < data.length; i++) {
+      var dataPoints = [];
+      for (var j = 0; j < data[i].data.length; j++) {
+        console.log(data[i].data[j].x);
+        dataPoints.push({
+          x: data[i].data[j].x,
+          y: data[i].data[j].y
+        });
       }
- /*
-  componentDidMount() {
-    var data = this.state.data;
-    var chart = this.chart;
-    
-   
-    console.log( this.state.showData);
-    chart.render();
+      this.state.showData.push({
+        type: "line",
+        name: data[i].title,
+        showInLegend: true,
+        xValueFormatString: "Time: ##",
+        yValueFormatString: "#,###",
+        dataPoints: dataPoints
+      });
+    }
+
+    this.toggleDataSeries = this.toggleDataSeries.bind(this);
+    this.addSymbols = this.addSymbols.bind(this);
   }
-*/
+
+  UNSAFE_componentWillUpdate(nextProps, nextState) {
+    console.log(nextProps);
+    
+    if(nextProps.data !== this.state.data){
+      var data = nextProps.data;
+      this.state.showData = [];
+         for (var i = 0; i < data.length; i++) {
+           var dataPoints = [];
+           for (var j = 0; j < data[i].data.length; j++) {
+             dataPoints.push({
+               label: data[i].data[j].x,
+               y: data[i].data[j].y
+             });
+           }
+           this.state.showData.push({
+             type: "line",
+             name: data[i].title,
+             showInLegend: true,
+             xValueFormatString: "#",
+             yValueFormatString: "#,###,###",
+             dataPoints: dataPoints
+           })
+         }
+
+    }
+  }
+
+
   addSymbols(e) {
     var suffixes = ["", "K", "M", "B"];
     var order = Math.max(Math.floor(Math.log(e.value) / Math.log(1000)), 0);
@@ -96,39 +103,16 @@ export default class MultiLines extends React.Component {
         itemclick: this.toggleDataSeries,
         verticalAlign: "top"
       },
-      data:  this.state.showData
-      /*[
-
-        {
-          type: "line",
-          name: "Actual Sales",
-          showInLegend: true,
-          xValueFormatString: "MMMM YYYY",
-          yValueFormatString: "$#,##0",
-          dataPoints: dataPoints
-          
-        },
-        {
-          type: "line",
-          name: "Expected Sales",
-          showInLegend: true,
-          yValueFormatString: "$#,##0",
-          dataPoints: dataPoints
-        },
-        {
-          type: "line",
-          name: "Profit",
-          markerBorderColor: "white",
-          markerBorderThickness: 2,
-          showInLegend: true,
-          yValueFormatString: "$#,##0",
-          dataPoints: dataPoints
-        }
-      ]*/
+      data: this.state.showData
     };
     return (
       <div>
-        <CanvasJSChart options={options} onRef={ref => (this.chart = ref)} width='100%' height='100%'/>
+        <CanvasJSChart
+          options={options}
+          onRef={ref => (this.chart = ref)}
+          width="100%"
+          height="100%"
+        />
         {/*You can get reference to the chart instance as shown above using onRef. This allows you to access all chart properties and methods*/}
       </div>
     );
